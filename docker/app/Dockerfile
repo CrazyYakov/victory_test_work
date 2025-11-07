@@ -12,17 +12,16 @@ WORKDIR /var/www
 #### INSTALL REQUIRE PACKAGE #####
 
 RUN apk update && apk add \
-     oniguruma-dev libxml2-dev
+     oniguruma-dev libxml2-dev libpq-dev oniguruma-dev zip
 
 ##### ISNTALL COMPOSER #####
 COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 
 ##### INSTALL PHP EXTENSIONS #####
 
-RUN apk add --no-cache oniguruma-dev zip && \
-    docker-php-ext-install pdo
+RUN docker-php-ext-install pdo pdo_pgsql
 
-###### CREATE APP USER #####
+##### CREATE APP USER #####
 RUN addgroup -g ${USER_ID} -S ${USER_NAME} \
     && adduser -u ${USER_ID} -D -S ${USER_NAME} ${USER_NAME}
 
