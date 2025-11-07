@@ -1,0 +1,50 @@
+version: '3.7'
+
+networks:
+  order-management-system:
+    driver: overlay
+    external: true
+
+services:
+  app:
+    container_name: app
+    build:
+      context: ./docker/app
+      args:
+        - USER_NAME=${USER_NAME}
+        - USER_ID=${USER_ID}
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www
+    networks:
+      - order-management-system
+    restart: unless-stopped
+    env_file:
+      - .env
+  postgres:
+    image: postgres:18-alpine
+    container_name: postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    networks:
+      - order-management-system
+    ports:
+      - "127.0.0.1:5454:5432"
+    restart: unless-stopped
+  nginx:
+    container_name: nginx
+    build:
+      context: ./docker/nginx
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www
+    depends_on:
+      - app
+    networks:
+      - order-management-system
