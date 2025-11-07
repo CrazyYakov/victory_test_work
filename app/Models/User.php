@@ -2,15 +2,36 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\QueryBuilder\UserBuilder;
+use App\ValueObject\UserRoleEnum;
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property UserRoleEnum $role
+ * @property string $email
+ * @property string $password
+ *
+ * @property-read int $id
+ * @property-read Carbon $created_at
+ * @property-read Carbon $updated_at
+ *
+ * @property-read Collection|Order[] $orders
+ *
+ * @method static UserBuilder query()
+ */
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable, HasApiTokens;
+
+    protected static string $builder = UserBuilder::class;
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +39,9 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
+        'status',
     ];
 
     /**
@@ -41,8 +62,13 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRoleEnum::class,
         ];
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 }
