@@ -40,7 +40,7 @@ class UpdateProductTest extends TestCase
         $response->assertForbidden();
     }
 
-    public function testAccessDeniedWithoutUser(): void
+    public function testUnauthorized(): void
     {
         $requestData = [
             'name' => 'product',
@@ -58,7 +58,7 @@ class UpdateProductTest extends TestCase
 
         $response = $this->postJson($route, $requestData);
 
-        $response->assertForbidden();
+        $response->assertUnauthorized();
     }
 
 

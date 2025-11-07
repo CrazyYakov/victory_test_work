@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
-use App\ValueObject\OrderStatusEnum;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use OrderManagement\Admin\Domain\Values\Enums\OrderStatusEnum;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>

@@ -13,7 +13,7 @@ class CreateProductTest extends TestCase
 
     protected const ROUTE_NAME = 'v1.admin.products.store';
 
-    public function testAccessDeniedForUser(): void
+    public function testAccessDenied(): void
     {
         $route = route(static::ROUTE_NAME);
 
@@ -34,7 +34,7 @@ class CreateProductTest extends TestCase
         $this->assertDatabaseCount('products', 0);
     }
 
-    public function testAccessDeniedWithoutUser(): void
+    public function testUnauthorized(): void
     {
         $route = route(static::ROUTE_NAME);
 
@@ -45,7 +45,7 @@ class CreateProductTest extends TestCase
 
         $response = $this->postJson($route, $requestData);
 
-        $response->assertForbidden();
+        $response->assertUnauthorized();
 
         $this->assertDatabaseCount('products', 0);
     }
@@ -69,7 +69,7 @@ class CreateProductTest extends TestCase
         $response->assertCreated();
 
         $this->assertDatabaseHas('products', [
-            'name' => 'Product',
+            'name' => 'product',
             'price' => 10_000,
         ]);
     }

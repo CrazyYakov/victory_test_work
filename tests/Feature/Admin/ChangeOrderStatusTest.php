@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Order;
 use App\Models\User;
+use App\ValueObject\UserRoleEnum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -30,7 +31,7 @@ class ChangeOrderStatusTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function testAccessDenied(): void
+    public function testUnauthorized(): void
     {
         $order = Order::factory()
             ->for(
@@ -47,12 +48,36 @@ class ChangeOrderStatusTest extends TestCase
             'status' => 'processing',
         ]);
 
+        $response->assertUnauthorized();
+    }
+
+    public function testAccessDenied(): void
+    {
+        $user = User::factory()
+            ->set('role', UserRoleEnum::USER->value)
+            ->create();
+
+        $order = Order::factory()
+            ->for($user)
+            ->set('status', 'new')
+            ->create();
+
+        $route = route(static::ROUTE_NAME, [
+            'order' => $order,
+        ]);
+
+        $response = $this->actingAs($user)
+            ->postJson($route, [
+                'status' => 'processing',
+            ]);
+
         $response->assertForbidden();
     }
 
     public function testChangeStatus(): void
     {
         $user = User::factory()
+            ->set('role', UserRoleEnum::ADMIN->value)
             ->create();
 
         $order = Order::factory()
@@ -71,7 +96,7 @@ class ChangeOrderStatusTest extends TestCase
 
         $response->assertOk();
 
-        $this->assertDatabaseHas('order', [
+        $this->assertDatabaseHas('orders', [
             'id' => $order->id,
             'status' => 'processing',
         ]);
