@@ -5,6 +5,8 @@ namespace Tests\Feature\Profile;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use OrderManagement\Profile\Infrastructure\Notifications\OrderSuccessfullyPlaced;
 use Tests\TestCase;
 
 class CreateOrderTest extends TestCase
@@ -126,5 +128,35 @@ class CreateOrderTest extends TestCase
                 ->first()
                 ->getKey(),
         ]);
+    }
+
+    public function testNotification()
+    {
+        Notification::fake();
+
+        $product = Product::factory()
+            ->create();
+
+        $user = User::factory()
+            ->create();
+
+        $route = route(static::ROUTE_NAME);
+
+        $requestData = [
+            'products' => [
+                [
+                    'id' => $product->id,
+                    'price' => 1000.25,
+                    'quantity' => 2
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)
+            ->postJson($route, $requestData);
+
+        $response->assertCreated();
+
+        Notification::assertSentTo($user, OrderSuccessfullyPlaced::class);
     }
 }
