@@ -29,14 +29,15 @@ class ShowOrderOfCurrentUserTest extends TestCase
         $response->assertNotFound();
     }
 
-    public function testAccessDenied(): void
+    public function testUnauthorized(): void
     {
         $order = Order::factory()
             ->hasAttached(
                 factory: Product::factory()
                     ->count(2),
                 pivot: [
-                    'quantity' => 2
+                    'quantity' => 2,
+                    'price' => 10_000,
                 ]
             )
             ->for(
@@ -51,7 +52,7 @@ class ShowOrderOfCurrentUserTest extends TestCase
 
         $response = $this->getJson($route);
 
-        $response->assertForbidden();
+        $response->assertUnauthorized();
     }
 
     public function testExist(): void
@@ -65,7 +66,7 @@ class ShowOrderOfCurrentUserTest extends TestCase
                     ->count(2),
                 pivot: [
                     'quantity' => 2,
-                    'price' => 10000
+                    'price' => 10000,
                 ]
             )
             ->for($user)
@@ -103,7 +104,8 @@ class ShowOrderOfCurrentUserTest extends TestCase
                 factory: Product::factory()
                     ->count(2),
                 pivot: [
-                    'quantity' => 2
+                    'quantity' => 2,
+                    'price' => 10_000,
                 ]
             )
             ->for($anotherUser)
