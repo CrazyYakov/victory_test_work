@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Policies\OrderPolicy;
+use App\QueryBuilder\OrderBuilder;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,12 +25,15 @@ use OrderManagement\Admin\Domain\Values\Enums\OrderStatusEnum;
  * @property-read Collection|Product[] $products
  *
  * @method static self findOrFail(int $orderId)
+ * @method static OrderBuilder query()
  */
 #[UsePolicy(OrderPolicy::class)]
 class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */
     use HasFactory;
+
+    protected static string $builder = OrderBuilder::class;
 
     protected function casts(): array
     {

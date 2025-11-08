@@ -39,7 +39,8 @@ class GetOrderListOfCurrentUserTest extends TestCase
                 factory: Product::factory()
                     ->count(2),
                 pivot: [
-                    'quantity' => 2
+                    'quantity' => 2,
+                    'price' => 10_000,
                 ]
             )
             ->for($user)
@@ -52,6 +53,6 @@ class GetOrderListOfCurrentUserTest extends TestCase
 
         $response->assertOk()
             ->assertJsonIsArray('orders')
-            ->assertJsonCount(2, 'orders');
+            ->assertJsonCount(3, 'orders');
     }
 }
