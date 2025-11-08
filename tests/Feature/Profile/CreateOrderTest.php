@@ -21,10 +21,12 @@ class CreateOrderTest extends TestCase
         $route = route(static::ROUTE_NAME);
 
         $requestData = [
-            [
-                'productId' => $product->id,
-                'quantity' => 2
-            ]
+            'products' => [
+                [
+                    'productId' => $product->id,
+                    'quantity' => 2
+                ],
+            ],
         ];
 
         $response = $this->postJson($route, $requestData);
@@ -60,9 +62,12 @@ class CreateOrderTest extends TestCase
         $route = route(static::ROUTE_NAME);
 
         $requestData = [
-            [
-                'productId' => $product->id,
-                'quantity' => 2
+            'products' => [
+                [
+                    'id' => $product->id,
+                    'price' => 1000.25,
+                    'quantity' => 2
+                ],
             ],
         ];
 
@@ -71,7 +76,7 @@ class CreateOrderTest extends TestCase
 
         $response->assertCreated();
 
-        $this->assertDatabaseHas('order', [
+        $this->assertDatabaseHas('orders', [
             'user_id' => $user->id,
         ]);
 
@@ -88,12 +93,15 @@ class CreateOrderTest extends TestCase
 
         $route = route(static::ROUTE_NAME);
 
-        $requestData = $products->map(function (Product $product) {
-            return [
-                'productId' => $product->id,
-                'quantity' => random_int(1, 5),
-            ];
-        });
+        $requestData = [
+            'products' => $products->map(function (Product $product) {
+                return [
+                    'id' => $product->id,
+                    'price' => 1000.00,
+                    'quantity' => random_int(1, 5),
+                ];
+            })->all()
+        ];
 
         $user = User::factory()
             ->create();
@@ -103,7 +111,7 @@ class CreateOrderTest extends TestCase
 
         $response->assertCreated();
 
-        $this->assertDatabaseHas('order', [
+        $this->assertDatabaseHas('orders', [
             'user_id' => $user->id,
         ]);
 
