@@ -13,7 +13,7 @@ class ShowProductTest extends TestCase
 
     protected const ROUTE_NAME = 'v1.public.products.show';
 
-    public function testAccessDeniedWithoutUser(): void
+    public function testUnauthorized(): void
     {
         $route = route(static::ROUTE_NAME, [
             'product' => 1000,

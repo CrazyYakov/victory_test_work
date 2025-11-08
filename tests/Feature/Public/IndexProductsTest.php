@@ -13,7 +13,7 @@ class IndexProductsTest extends TestCase
 
     protected const ROUTE_NAME = 'v1.public.products.index';
 
-    public function testAccessDeniedWithoutUser(): void
+    public function testUnauthorized(): void
     {
         $route = route(static::ROUTE_NAME);
 
