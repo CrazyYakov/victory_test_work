@@ -27,4 +27,6 @@ RUN addgroup -g ${USER_ID} -S ${USER_NAME} \
 
 USER ${USER_NAME}
 
+EXPOSE 9000
+
 CMD php-fpm
