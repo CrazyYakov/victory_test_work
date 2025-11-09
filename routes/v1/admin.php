@@ -15,9 +15,9 @@ Route::prefix('/orders')
 Route::prefix('/products')
     ->name('products.')
     ->group(function () {
-        Route::post('/create', CreateProductController::class)
+        Route::post('/', CreateProductController::class)
             ->name('store');
 
-        Route::post('/update/{product}', UpdateProductController::class)
+        Route::post('/{product}', UpdateProductController::class)
             ->name('update');
     });

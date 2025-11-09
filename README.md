@@ -1,59 +1,166 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Тестовая работа "Система управления заказам"
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Это тестовое задание. Реализовать backend-часть мини-приложения для управления заказами на Laravel 12.
 
-## About Laravel
+# Технические требования
+- Docker
+- PostgresSQL
+- PHP 8.2
+- Laravel 12
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+# Инструкция по запуску
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Предварительная установка
+```shell
+cp .env.example .env
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+В файл `hosts` добавьте строку:
+```text
+127.0.0.1 victory.test
+```
 
-## Learning Laravel
+## Установка
+```shell
+docker compose up -d
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+# Запуск после установки
+```shell
+docker compose exec app composer i
+docker compose exec php artisan key:generate
+docker compose exec php artisan db:seed
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Сервисы Docker compose
+- app
+- postgres
+- nginx
+- queue
 
-## Laravel Sponsors
+## app
+Приложение на laravel.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## postgres
+База данных. Основное хранилище.
 
-### Premium Partners
+## nginx
+Сервер приложения.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## queue
+Контейнер для работы с очередями.
 
-## Contributing
+# Структура
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## DDD
+Проект лежит в папке `src` и разработан по принципам Domain-Driven Design (DDD).
+Проект поделен на следующие контексты по своим бизнес-задачам:
 
-## Code of Conduct
+- Admin (Управление заказами и товарами)
+- Auth (Аутентификация пользователя)
+- Profile (Управление заказами текущего пользователя)
+- Public (Публичная часть)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Архитектура
+Каждый контекст поделен на следующие слои:
+- Application (Слой приложения)
+- Domain (Бизнес-модель)
+- Infrastructure (Инфраструктура: работа с БД, очередями и т.д.)
+- Presentation (Взаимодействие с клиентом)
 
-## Security Vulnerabilities
+Структура каждого контекста выполнена следующим образом:
+```
+{Bounded Context}/
+├── Applcation/
+│   └── Actions
+├── Domain/
+│   ├── Aggregates
+│   ├── Entities
+│   └── Factories
+├── Infrastructure/
+│   ├── Managers
+│   ├── Repositories
+│   └── Services
+└── Presentation/
+    ├── Controllers
+    ├── Requests
+    └── Resoruces
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# REST API 
 
-## License
+### Регистрация
+`POST` - `/api/v1/auth/registration`
+```json
+{
+    "email": "someone@mail.com",
+    "password": "password"
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Auth 
+
+### Авторизация
+`POST` - `/api/v1/auth/authorization`
+```json
+{
+    "email": "someone@mail.com",
+    "password": "password"
+}
+```
+
+## Profile
+
+### Создать заказ
+`POST` - `/api/v1/profile/orders`
+```json
+{
+    "products": [
+        {
+            "id": 1,
+            "quantity": 2
+        }
+    ]
+}
+```
+### Просмотреть заказы
+`GET` - `/api/v1/profile/orders`
+
+### Просмотреть заказ
+`GET` - `/api/v1/profile/orders/{order}`
+
+## Public
+
+### Просмотреть товары
+`GET` - `/api/v1/public/products`
+
+### Просмотреть товар
+`GET` - `/api/v1/public/products/{product}`
+
+## Admin
+
+### Обновить статус заказа
+`POST` - `/api/v1/admin/orders/{order}/change-status`
+```json
+{
+    "status": "processing"
+}
+```
+
+### Создать товар
+`POST` - ` api/v1/admin/products`
+```json
+{
+    "name": "name",
+    "price": 1000.00
+}
+```
+
+### Обновить товар
+`POST` - ` api/v1/admin/products/{product}`
+```json
+{
+    "name": "name",
+    "price": 1000.00
+}
+```
