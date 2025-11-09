@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Policies\ProductPolicy;
+use App\QueryBuilder\ProductBuilder;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,12 +19,15 @@ use Illuminate\Support\Carbon;
  * @property float $price
  *
  * @method static self findOrFail(int $id)
+ * @method static ProductBuilder query()
  */
 #[UsePolicy(ProductPolicy::class)]
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
+
+    protected static string $builder = ProductBuilder::class;
 
     protected function casts(): array
     {

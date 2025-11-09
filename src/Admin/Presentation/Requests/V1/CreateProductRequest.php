@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace OrderManagement\Admin\Presentation\Requests\V1;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
-/**
- * @property-read string $name
- * @property-read float $price
- */
 class CreateProductRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return Gate::allows('create', Product::class);
+    }
+
     public function rules(): array
     {
         return [

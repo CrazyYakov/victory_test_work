@@ -12,7 +12,6 @@ class ProductFactory
     {
         return new Product(
             id: $data['id'],
-            price: $data['price'],
             quantity: $data['quantity'],
         );
     }

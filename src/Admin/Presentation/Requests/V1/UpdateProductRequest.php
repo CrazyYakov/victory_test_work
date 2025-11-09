@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace OrderManagement\Admin\Presentation\Requests\V1;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 
 /**
- * @property-read string $name
- * @property-read float $price
+ * @property-read Product $product
  */
 class UpdateProductRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return Gate::allows('update', $this->product);
+    }
+
     public function rules(): array
     {
         return [
