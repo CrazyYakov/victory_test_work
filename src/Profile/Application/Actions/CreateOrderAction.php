@@ -6,6 +6,7 @@ namespace OrderManagement\Profile\Application\Actions;
 
 use OrderManagement\Profile\Domain\Aggregates\Order;
 use OrderManagement\Profile\Domain\Entities\Product;
+use OrderManagement\Profile\Domain\Values\List\ProductList;
 use OrderManagement\Profile\Infrastructure\Managers\OrderManager;
 use OrderManagement\Profile\Infrastructure\Services\OrderNotification;
 
@@ -18,7 +19,9 @@ readonly class CreateOrderAction
 
     public function execute(int $userId, Product ...$products): int
     {
-        $order = new Order($userId, $products);
+        $productList = new ProductList(...$products);
+
+        $order = new Order($userId, $productList);
 
         $orderId = $this->orderManager->createOrder($order);
 

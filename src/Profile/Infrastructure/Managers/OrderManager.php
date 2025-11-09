@@ -7,6 +7,7 @@ namespace OrderManagement\Profile\Infrastructure\Managers;
 use Illuminate\Support\Arr;
 use OrderManagement\Profile\Domain\Aggregates\Order;
 use OrderManagement\Profile\Domain\Entities\Product;
+use OrderManagement\Profile\Domain\Values\List\ProductList;
 
 class OrderManager
 {
@@ -18,21 +19,19 @@ class OrderManager
         $orderModel->save();
 
         $orderModel->products()->attach(
-            $this->transformProductsForAttachInOrder($order->products)
+            $this->transformProductsForAttachInOrder($order->productList)
         );
 
         return $orderModel->getKey();
     }
 
-    protected function transformProductsForAttachInOrder(array $products): array
+    protected function transformProductsForAttachInOrder(ProductList $products): array
     {
-        $productIds = Arr::pluck($products, 'id');
-
         $priceList = \App\Models\Product::query()
-            ->whereInId($productIds)
+            ->whereInId($products->getIds())
             ->pluck('price', 'id');
 
-        return collect($products)
+        return collect($products->get())
             ->keyBy('id')
             ->map(
                 fn(Product $product, int $id) => [
