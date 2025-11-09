@@ -13,4 +13,4 @@ RUN docker-php-ext-install pdo pdo_pgsql
 
 WORKDIR /var/www
 
-ENTRYPOINT ["php", "artisan", "queue:work", "--tries=1", "--timeout=30", "--queue=default"]
+ENTRYPOINT ["php", "artisan", "queue:work", "--tries=1", "--timeout=30", "--queue=default", "--sleep=5"]
