@@ -105,6 +105,8 @@ docker compose exec app php artisan test
 
 # REST API 
 
+## Auth
+
 ### Регистрация
 `POST` - `/api/v1/auth/registration`
 ```json
@@ -113,8 +115,6 @@ docker compose exec app php artisan test
     "password": "password"
 }
 ```
-
-## Auth 
 
 ### Авторизация
 `POST` - `/api/v1/auth/authorization`
