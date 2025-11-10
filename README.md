@@ -15,6 +15,12 @@
 cp .env.example .env
 ```
 
+В файл `.env` добавить значения:
+```dotenv
+USER_NAME=${USER}
+USER_ID=${UID}
+```
+
 В файл `hosts` добавьте строку:
 ```text
 127.0.0.1 victory.test
@@ -28,8 +34,18 @@ docker compose up -d
 # Запуск после установки
 ```shell
 docker compose exec app composer i
-docker compose exec php artisan key:generate
-docker compose exec php artisan db:seed
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate
+```
+
+# Проверить работу с тестовыми данными
+```shell
+docker compose exec app php artisan db:seed
+```
+
+# Запустить тесты
+```shell
+docker compose exec app php artisan test
 ```
 
 # Сервисы Docker compose
